@@ -25,7 +25,7 @@ const MediaPlayer = () => {
 
         const handleEnded = () => {
             setIsPlaying(false);
-            setCurrentTime(0); // Reimposta il contatore quando la traccia è terminata
+            setCurrentTime(0);
             setFormattedTime(formatTime(0));
         };
 
@@ -44,6 +44,14 @@ const MediaPlayer = () => {
             }
         };
     }, [isPlaying]);
+
+    useEffect(() => {
+        setIsPlaying(false);
+    }, [song.track]);
+
+    if (!song.track) {
+        return null; 
+    }
 
     const playPauseHandler = () => {
         if (audioRef.current) {
@@ -75,87 +83,69 @@ const MediaPlayer = () => {
     return (
         <div className="container-fluid fixed-bottom bg-container pt-1">
             <Row>
-                {song.track && (
-                    <>
-                        <Col xs={5}>
-                            <div className="d-flex align-items-center">
-                                <img
-                                    src={song.track.album.cover_small}
-                                    alt="track"
-                                />
-                                <p className="text-white ms-3">
-                                    {song.track.title}
-                                </p>
-                            </div>
-                        </Col>
-                        <Col xs={4} className="playerControls c-player">
-                            <Row className="d-flex justify-content-center">
-                                <Col
-                                    xs={12}
-                                    className="d-flex justify-content-center"
-                                >
-                                    <Row>
-                                        <Col>
-                                            <img src={Shuffle} alt="shuffle" />
-                                        </Col>
-                                        <Col>
-                                            <img
-                                                src={Previous}
-                                                alt="previous"
-                                                width={10}
-                                                height={10}
-                                            />
-                                        </Col>
-                                        <Col>
-                                            <img
-                                                src={isPlaying ? Pause : Play}
-                                                alt={
-                                                    isPlaying ? "pause" : "play"
-                                                }
-                                                width={15}
-                                                height={15}
-                                                onClick={playPauseHandler}
-                                            />
-                                        </Col>
-                                        <Col>
-                                            <img
-                                                src={Next}
-                                                alt="next"
-                                                width={10}
-                                                height={10}
-                                            />
-                                        </Col>
-                                        <Col>
-                                            <img
-                                                src={Repeat}
-                                                alt="repeat"
-                                                width={10}
-                                                height={10}
-                                            />
-                                        </Col>
-                                    </Row>
-                                    <Col
-                                        xs={2}
-                                        className="text-white ms-5 my-2"
-                                    >
-                                        {formattedTime}
-                                    </Col>
+                <Col xs={5}>
+                    <div className="d-flex align-items-center">
+                        <img src={song.track.album.cover_small} alt="track" />
+                        <p className="text-white ms-3">{song.track.title}</p>
+                    </div>
+                </Col>
+                <Col xs={4} className="playerControls c-player">
+                    <Row className="d-flex justify-content-center">
+                        <Col xs={12} className="d-flex justify-content-center">
+                            <Row>
+                                <Col>
+                                    <img src={Shuffle} alt="shuffle" />
                                 </Col>
-                                <Col xs={12} className="mt-1">
-                                    <ProgressBar
-                                        now={
-                                            (currentTime /
-                                                (audioRef.current?.duration ||
-                                                    1)) *
-                                            100
-                                        }
-                                        onChange={seekHandler}
+                                <Col>
+                                    <img
+                                        src={Previous}
+                                        alt="previous"
+                                        width={10}
+                                        height={10}
+                                    />
+                                </Col>
+                                <Col>
+                                    <img
+                                        src={isPlaying ? Pause : Play}
+                                        alt={isPlaying ? "pause" : "play"}
+                                        width={15}
+                                        height={15}
+                                        onClick={playPauseHandler}
+                                    />
+                                </Col>
+                                <Col>
+                                    <img
+                                        src={Next}
+                                        alt="next"
+                                        width={10}
+                                        height={10}
+                                    />
+                                </Col>
+                                <Col>
+                                    <img
+                                        src={Repeat}
+                                        alt="repeat"
+                                        width={10}
+                                        height={10}
                                     />
                                 </Col>
                             </Row>
+                            <Col xs={2} className="text-white ms-5 my-2">
+                                {formattedTime}
+                            </Col>
                         </Col>
-                    </>
-                )}
+                        <Col xs={12} className="mt-1">
+                            <ProgressBar
+                                now={
+                                    (currentTime /
+                                        (audioRef.current?.duration || 1)) *
+                                    100
+                                }
+                                onChange={seekHandler}
+                            />
+                        </Col>
+                    </Row>
+                </Col>
             </Row>
             {song.track && <audio ref={audioRef} src={song.track.preview} />}
         </div>

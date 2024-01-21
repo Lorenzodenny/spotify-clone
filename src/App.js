@@ -10,6 +10,8 @@ import MediaPlayer from "./components/MediaPlayer";
 import MySidebar from "./components/MySidebar";
 import MyLibrary from "./components/MyLibrary";
 import NotFound from "./components/NotFound";
+import Cookie from "./components/Cookie";
+import Privacy from "./components/Privacy";
 
 
 
@@ -26,10 +28,12 @@ const App = () => (
           
           <Routes>
             <Route path="/" element={<MainPage />} />
-            <Route path="/artist" element={<ArtistPage/>}/>
+            <Route path="/artist/:id" element={<ArtistPage/>}/>
             <Route path="/album/:id" element={<AlbumPage/>}/>
             <Route path="/search/:query" element={<SearchPage/>}/>
             <Route path="/mylibrary" element={<MyLibrary/>} />
+            <Route path="/cookie" element={<Cookie />} />  
+            <Route path="/privacy" element={<Privacy />} />
             <Route path="*" element={<NotFound/>} />
           </Routes>
           

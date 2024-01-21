@@ -258,3 +258,18 @@ margin-top: 30%;
   font-size: 80px;
   color: red;
 }
+
+.cookie{
+  width: 75%;
+  margin: 7.5% 0 0 20%;
+}
+
+.privacy {
+  width: 100%;
+  margin: 10% 0 0 10%;
+}
+
+.error-not {
+  width: 60%;
+  margin: 0 0 0 30%;
+}
