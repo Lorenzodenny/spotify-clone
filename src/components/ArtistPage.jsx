@@ -1,54 +1,76 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Row, Col, Button } from "react-bootstrap";
+import { useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { addToFavouriteAction, removeFromFavouriteAction } from "../redux/actions";
+
 
 const ArtistPage = () => {
-    return (
-        <div className="col-12 col-md-9 offset-md-3 mainPage">
-            <Row className="mb-3">
-                <Col xs={9} lg={11} className="mainLinks d-none d-md-flex">
-                    <a href="www">TRENDING</a>
-                    <a href="www">PODCAST</a>
-                    <a href="www">MOODS AND GENRES</a>
-                    <a href="www">NEW RELEASES</a>
-                    <a href="www">DISCOVER</a>
-                </Col>
-            </Row>
+  const [artist, setArtist] = useState({});
+  const [tracks, setTracks] = useState([]);
+  const { id } = useParams();
+  const dispatch = useDispatch();
+  const favourites = useSelector((state) => state.favourite.list);
 
-            <Row>
-                <Col xs={12} md={10} lg={10} className="mt-5">
-                    <h2 className="titleMain"></h2>
-                    <div id="followers"></div>
-                    <div
-                        className="d-flex justify-content-center"
-                        id="button-container"
-                    >
-                        <Button
-                            className="btn btn-success mr-2 mainButton d-none"
-                            id="playButton"
-                        >
-                            PLAY
-                        </Button>
-                        <Button
-                            className="btn btn-outline-light mainButton d-none"
-                            id="followButton"
-                        >
-                            FOLLOW
-                        </Button>
-                    </div>
-                </Col>
-            </Row>
-            <Row className="mb-3">
-                <Col xs={10} md={10} lg={10} className="p-0 offset-1">
-                    <div className="mt-4 d-flex justify-content-start">
-                        <h2 className="text-white font-weight-bold">Tracks</h2>
-                    </div>
-                    <div className="pt-5 mb-5">
-                        <div className="row" id="apiLoaded"></div>
-                    </div>
-                </Col>
-            </Row>
-        </div>
-    );
+  useEffect(() => {
+    const fetchArtist = async () => {
+      try {
+        const response = await fetch(`https://striveschool-api.herokuapp.com/api/deezer/artist/${id}`, {
+          method: 'GET',
+          headers: {
+            "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NWFhNTY5YzE4N2U1YzAwMTgxNGM2YjQiLCJpYXQiOjE3MDU2NjIxMDgsImV4cCI6MTcwNjg3MTcwOH0.aBztB7t0GA8QRopl6rgganyDdrzE7DVzdja5mvqIXmE"
+          },
+        });
+
+        if (response.ok) {
+          const result = await response.json();
+          setArtist(result);
+          setTracks(result.top_tracks.data);
+        } else {
+          console.error('Errore nella richiesta:', response.status);
+        }
+      } catch (error) {
+        console.error('Errore generico:', error);
+      }
+    };
+    
+    fetchArtist();
+  }, [id]);
+  
+  const handleToggleSelected = (index) => {
+    setTracks((prevTracks) => {
+      const updatedTracks = [...prevTracks];
+      updatedTracks[index] = { ...updatedTracks[index], selected: !updatedTracks[index].selected };
+      return updatedTracks;
+    });
+  };
+
+  const handleFavouriteToggle = (song) => {
+    if (favourites.some(fav => fav.id === song.id)) {
+      dispatch(removeFromFavouriteAction(song.id));
+    } else {
+      dispatch(addToFavouriteAction(song));
+    }
+  };
+
+  return (
+    <div className="col-12 col-md-9 offset-md-3 mainPage">
+      <Row>
+        <Col md={3} className="pt-5 text-center mt-5 me-5">
+        <p className="bg-success baky">Fan: {artist.nb_fan} </p>
+        <p className="bg-success baky">Album: {artist.nb_album} </p>
+        </Col>
+        <Col md={3} className="pt-5 text-center" id="img-container">
+          {artist && (
+            <>
+                <img src={artist.picture_medium} alt={artist.name} />
+                <p className="text-white mt-3 fw-bold">{artist.name} </p>
+            </>
+          )}
+        </Col>
+      </Row>
+    </div>
+  );
 };
 
 export default ArtistPage;

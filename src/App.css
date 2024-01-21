@@ -273,3 +273,9 @@ margin-top: 30%;
   width: 60%;
   margin: 0 0 0 30%;
 }
+
+.baky {
+  border-radius: 30px;
+  border: solid black 1px;
+  padding: 3%;
+}
